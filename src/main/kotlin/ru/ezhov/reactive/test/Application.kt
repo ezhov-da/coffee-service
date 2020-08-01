@@ -1,6 +1,5 @@
 package ru.ezhov.reactive.test
 
-import kotlinx.coroutines.runBlocking
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers

@@ -101,7 +101,6 @@ data class CoffeeOrder(val coffeeId: String, val whenOrdered: Instant)
 @Document
 data class Coffee(@Id val id: String? = null, val name: String = "Any old joe")
 
-
 data class Test(val value: Int) {
     operator fun plus(pl: Test) = Test(this.value + pl.value)
 }
