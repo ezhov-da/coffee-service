@@ -82,24 +82,27 @@ class InfoPanel : JPanel {
     }
 
     private fun asTable(counts: Map<Char, Int>): String {
-        val sb = StringBuilder()
-        sb.append("<table>")
-        sb.append("<caption>counts</caption>")
-        sb.append("<tr>")
+        return StringBuilder().run {
+            append("<table>")
+            append("<caption>counts</caption>")
+            append("<tr>")
 
-        var counter: Int = 0
+            var counter: Int = 0
 
-        counts.forEach {
-            if (counter != 0 && counter % 3 == 0) {
-                sb.append("</tr>").append("<tr>")
+            counts.forEach {
+                if (counter != 0 && counter % 3 == 0) {
+                    append("</tr>")
+                    append("<tr>")
+                }
+                append("<td>")
+                append("${it.key} = ${it.value}").append("</td>")
+                counter++
             }
-            sb.append("<td>").append("${it.key} = ${it.value}").append("</td>")
-            counter++
-        }
 
-        sb.append("</tr>")
-        sb.append("</table>")
-        return sb.toString()
+            append("</tr>")
+            append("</table>")
+            toString()
+        }
     }
 }
 
