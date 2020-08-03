@@ -4,6 +4,7 @@ import java.awt.BorderLayout
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import java.lang.StringBuilder
 import javax.swing.*
 import javax.swing.text.JTextComponent
 
@@ -30,8 +31,11 @@ fun main() {
             }
             val textPanel = TextPanel(keyListener)
 
-            this.add(textPanel, BorderLayout.CENTER)
-            this.add(infoPanel, BorderLayout.SOUTH)
+            val splitPane = JSplitPane(JSplitPane.VERTICAL_SPLIT)
+            splitPane.topComponent = textPanel
+            splitPane.bottomComponent = infoPanel
+
+            this.add(splitPane, BorderLayout.CENTER)
 
             this.isVisible = true
         }
@@ -46,6 +50,7 @@ class TextPanel : JPanel {
         this.layout = BorderLayout()
         this.add(JScrollPane(textPane), BorderLayout.CENTER)
         this.keyListener = keyListener
+        this.border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
         textPane.addKeyListener(this.keyListener)
     }
 }
@@ -56,21 +61,45 @@ class InfoPanel : JPanel {
 
     constructor(textExtractor: TextExtractor) {
         this.layout = BorderLayout()
-        this.add(labelInfo, BorderLayout.CENTER)
+        this.add(JScrollPane(labelInfo), BorderLayout.CENTER)
         this.textExtractor = textExtractor
+        this.border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
     }
 
     fun calculate(text: String) {
-        val extract = textExtractor.extract(text)
-        this.setText(extract.vowelsCount(), extract.consonantsCount(), extract.symbolsCount())
+        this.setText(textExtractor.extract(text))
     }
 
-    private fun setText(vowels: Int? = 0, consonants: Int? = 0, symbols: Int? = 0) {
+    private fun setText(textStatistics: TextStatistics) {
         labelInfo.text = """<html> 
-                vowels: $vowels <br/>
-                consonants: $consonants <br/>
-                symbols: $symbols <br/>
+            <p>
+                vowels: ${textStatistics.vowelsCount()} <br/>
+                consonants: ${textStatistics.consonantsCount()} <br/>
+                symbols: ${textStatistics.symbolsCount()}
+            </p>
+                ${asTable(textStatistics.counts())}
             """.trimMargin()
+    }
+
+    private fun asTable(counts: Map<Char, Int>): String {
+        val sb = StringBuilder()
+        sb.append("<table>")
+        sb.append("<caption>counts</caption>")
+        sb.append("<tr>")
+
+        var counter: Int = 0
+
+        counts.forEach {
+            if (counter != 0 && counter % 3 == 0) {
+                sb.append("</tr>").append("<tr>")
+            }
+            sb.append("<td>").append("${it.key} = ${it.value}").append("</td>")
+            counter++
+        }
+
+        sb.append("</tr>")
+        sb.append("</table>")
+        return sb.toString()
     }
 }
 
@@ -83,6 +112,10 @@ class TextExtractorImpl() : TextExtractor {
         var vowelsCount = 0
         var consonantsCount = 0
         var symbolsCount = 0
+
+        val eachCountMap = text.toList().groupingBy { it }.eachCount()
+        val sortedMap = eachCountMap.toSortedMap();
+
         for (char in originalList) {
             val charUpperCase = char.toUpperCase().toString()
 
@@ -114,17 +147,21 @@ class TextExtractorImpl() : TextExtractor {
                 return symbolsCount
             }
 
+            override fun counts(): Map<Char, Int> {
+                return sortedMap
+            }
+
         }
     }
 }
 
 interface TextExtractor {
     fun extract(text: String): TextStatistics
-
 }
 
 interface TextStatistics {
     fun vowelsCount(): Int
     fun consonantsCount(): Int
     fun symbolsCount(): Int
+    fun counts(): Map<Char, Int>
 }
