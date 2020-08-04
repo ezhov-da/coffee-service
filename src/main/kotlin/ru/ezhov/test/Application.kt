@@ -1,5 +1,9 @@
 package ru.ezhov.test
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.awt.BorderLayout
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -168,3 +172,15 @@ interface TextStatistics {
     fun symbolsCount(): Int
     fun counts(): Map<Char, Int>
 }
+
+//suspend fun showSomeData() = coroutineScope {
+//    val data = async(Dispatchers.IO) { // <- extension on current scope
+//     ... load some UI data for the Main thread ...
+//    }
+//
+//    withContext(Dispatchers.Main) {
+//        doSomeWork()
+//        val result = data.await()
+//        display(result)
+//    }
+//}
