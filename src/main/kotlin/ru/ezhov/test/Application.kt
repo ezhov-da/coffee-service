@@ -110,7 +110,7 @@ class InfoPanel : JPanel {
     }
 }
 
-class TextExtractorImpl() : TextExtractor {
+class TextExtractorImpl : TextExtractor {
     private val VOWELS = listOf("A", "E", "I", "O", "U")
     private val CONSONANTS = listOf("B", "C", "D", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z")
 
