@@ -1,14 +1,9 @@
 package ru.ezhov.test
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import java.awt.BorderLayout
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
-import java.lang.StringBuilder
 import javax.swing.*
 import javax.swing.text.JTextComponent
 
@@ -25,7 +20,7 @@ fun main() {
 
             val keyListener: KeyListener = object : KeyAdapter() {
                 override fun keyReleased(e: KeyEvent?) {
-                    val component = e!!.component;
+                    val component = e!!.component
                     if (component != null && component is JTextComponent) {
                         SwingUtilities.invokeLater {
                             infoPanel.calculate(component.text)
@@ -46,27 +41,23 @@ fun main() {
     }
 }
 
-class TextPanel : JPanel {
+class TextPanel(private val keyListener: KeyListener) : JPanel() {
     private val textPane: JTextPane = JTextPane()
-    private val keyListener: KeyListener
 
-    constructor(keyListener: KeyListener) {
+    init {
         this.layout = BorderLayout()
         this.add(JScrollPane(textPane), BorderLayout.CENTER)
-        this.keyListener = keyListener
         this.border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
         textPane.addKeyListener(this.keyListener)
     }
 }
 
-class InfoPanel : JPanel {
-    private val textExtractor: TextExtractor
+class InfoPanel(private val textExtractor: TextExtractor) : JPanel() {
     private val labelInfo: JLabel = JLabel()
 
-    constructor(textExtractor: TextExtractor) {
+    init {
         this.layout = BorderLayout()
         this.add(JScrollPane(labelInfo), BorderLayout.CENTER)
-        this.textExtractor = textExtractor
         this.border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
     }
 
@@ -91,7 +82,7 @@ class InfoPanel : JPanel {
             append("<caption>counts</caption>")
             append("<tr>")
 
-            var counter: Int = 0
+            var counter = 0
 
             counts.forEach {
                 if (counter != 0 && counter % 3 == 0) {
@@ -111,8 +102,8 @@ class InfoPanel : JPanel {
 }
 
 class TextExtractorImpl : TextExtractor {
-    private val VOWELS = listOf("A", "E", "I", "O", "U")
-    private val CONSONANTS = listOf("B", "C", "D", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z")
+    private val vowelsChars = listOf("A", "E", "I", "O", "U")
+    private val consonantsChars = listOf("B", "C", "D", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z")
 
     override fun extract(text: String): TextStatistics {
         val originalList = text.toList()
@@ -121,17 +112,17 @@ class TextExtractorImpl : TextExtractor {
         var symbolsCount = 0
 
         val eachCountMap = text.toList().groupingBy { it }.eachCount()
-        val sortedMap = eachCountMap.toSortedMap();
+        val sortedMap = eachCountMap.toSortedMap()
 
         for (char in originalList) {
             val charUpperCase = char.toUpperCase().toString()
 
             if (" " != charUpperCase) {
                 when {
-                    VOWELS.contains(charUpperCase) -> {
+                    vowelsChars.contains(charUpperCase) -> {
                         vowelsCount++
                     }
-                    CONSONANTS.contains(charUpperCase) -> {
+                    consonantsChars.contains(charUpperCase) -> {
                         consonantsCount++
                     }
                     else -> {
